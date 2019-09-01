@@ -1,0 +1,46 @@
+import requests
+import time
+import csv
+
+try:
+    req = requests.get('https://api.douban.com/v2/movie/1292052?apikey=0df993c66c0c636e29ecbb5344252a4a')
+except:
+     print('查询失败')
+#req.encoding = 'utf-8'
+moive_dict = req.json()
+moive_data = moive_dict.get('image')
+if moive_data:
+    print(moive_data)
+else:
+    print('抱歉，查不到')
+image_data = requests.get(moive_data)
+with open('d:\\test\\crossin\\c.jpg','wb') as f:
+    f.write(image_data.content)
+
+
+rows = []
+for start in range(0,250,20):
+    url = 'https://api.douban.com/v2/movie/top250?start=' + str(start) +'&apikey=0df993c66c0c636e29ecbb5344252a4a'
+    req = requests.get(url)
+    data = req.json()
+    for i in data.get('subjects'):
+        id = i['id']
+        title = i['title']
+        rate =i['rating']['average']
+        casts = i['casts']
+        actor = ''
+        for cast in casts:
+            actor += cast['name']+','
+        alt = i['alt']
+        row = (id,title,rate,actor,alt)
+        rows.append(row)
+        #保存图片
+        images = i['images']['large']
+        image_req = requests.get(images)
+        with open('d:\\test\\crossin\\photo\\%s.jpg'%title, 'wb') as f:
+            f.write(image_req.content)
+    time.sleep(1)
+#保存csv
+with open('d:\\test\\crossin\\photo\\douban250.csv','w',newline='')as f:
+    f_csv = csv.writer(f)
+    f_csv.writerows(rows)
