@@ -1,0 +1,11 @@
+#coding=utf-8
+import requests
+headers = {
+"Cookie":"Ugrow-G0=7e0e6b57abe2c2f76f677abd9a9ed65d; login_sid_t=ab494d26346c4cd010fbf03d5e9de3c7; cross_origin_proto=SSL; YF-V5-G0=7e17aef9f70cd5c32099644f32a261c4; WBStorage=f54cf4e4362237da|undefined; wb_view_log=1916*8891; _s_tentry=passport.weibo.com; Apache=2455063403450.599.1567600823358; SINAGLOBAL=2455063403450.599.1567600823358; ULV=1567600823456:1:1:1:2455063403450.599.1567600823358:; SSOLoginState=1567600871; SCF=AtYPLl0dmh6b1yKH2VusLHp6CYhxOKj69A-lMbsEozZ1w3ph4yUwkIpjq4tx-NDRRNdpiIK_rWbt-4pSCyWFzQg.; SUB=_2A25wa8C3DeRhGeNN7VYZ8y_PzTWIHXVTALV_rDV8PUNbmtANLRPXkW9NSYuxr4Bti_Xg1EYBZFzaPxPTWDr20hQe; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W555yDmssJro7.V-EKOM7qv5JpX5K2hUgL.Fo-0SoBRe020So.2dJLoIp7LxK-LBKMLB-eLxK.L1-zLBKnLxKqL1K.LBKn_; SUHB=08JrJK4H005q_D; ALF=1599136869; un=13217395608m0@sina.cn; wvr=6; YF-Page-G0=237c624133c0bee3e8a0a5d9466b74eb|1567600883|1567600883; wb_view_log_5364831369=1916*8891; webim_unReadCount=%7B%22time%22%3A1567600889112%2C%22dm_pub_total%22%3A0%2C%22chat_group_client%22%3A85%2C%22allcountNum%22%3A135%2C%22msgbox%22%3A0%7D",
+"User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
+}
+url = "https://weibo.com/a/hot/realtime"
+
+response = requests.get(url,headers=headers).text
+with open("d:\\test\\crossin\\weibo.html",'w',encoding='utf-8') as f:
+    f.write(response)
