@@ -1,0 +1,22 @@
+import requests,csv
+cookie = '_zap=fa112cb9-9bc0-4b1e-88d1-88818b9d577c; d_c0="APCiuOx3Bg-PTnvumIt48JI1b7OHMYm1eds=|1550912128"; __utma=51854390.1343530195.1551016774.1551016774.1551016774.1; __utmv=51854390.000--|3=entry_date=20190223=1; _cid="2|1:0|10:1567955179|4:_cid|28:MTE1NDE2ODM1NTI3ODY0NzI5Ng==|17cdc825288f3b9a97207b455a7be7788fb3f2837365a852fa238e75c38d1d13"; _xsrf=mdkKWKMXX4R4OIcDoWU75ywXAOejKxQB; capsion_ticket="2|1:0|10:1568006167|14:capsion_ticket|44:YTEwZWRiYzA1ZmMyNDYwOWI5NGM1MzJjMjVlMzEwOTE=|37161dcc7ae634b2b465364dc392ac96a71d4f91d13696eb795f7c2f45f156b4"; z_c0="2|1:0|10:1568006191|4:z_c0|92:Mi4xZ0FXR0F3QUFBQUFBOEtLNDdIY0dEeVlBQUFCZ0FsVk5MeTVqWGdDOUhET2xXUUZXNVR0UWMzZFl1ZUFBLXNrRlBn|ad927aa08cb5b471832a6774667821d7e829be541920718be5dab0ebe9a99db0"; tst=r; q_c1=4c7b0065fe554b52a8464331965147fb|1568089948000|1550912132000; tgw_l7_route=4860b599c6644634a0abcd4d10d37251'
+user_agent = 'Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Mobile Safari/537.36'
+link = 'https://www.zhihu.com/api/v3/feed/topstory/recommend?session_token=dee9fbd7ddf1953c93972557647d95a5&page_number=2&limit=6&mobile=true&action=down&after_id=5'
+header = {
+    'Cookie': cookie,'User-Agent': user_agent
+}
+
+response = requests.get(link,headers=header)
+response = response.json()
+
+a = []
+b = []
+for i in response.get('data'):
+    for j in i.values():
+        j = str(j)
+        b.append(j)
+        b.append(',')
+    
+with open('d:\\test\\crossin\\zhihu\\zhihu.csv','w',encoding='utf-8') as f:
+    f_csv = csv.writer(f)
+    f_csv.writerows(b)
