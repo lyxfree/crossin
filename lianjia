@@ -1,0 +1,37 @@
+from bs4 import BeautifulSoup
+import requests
+import re
+import csv
+
+url_list = ['https://sh.lianjia.com/zufang/pg{}/#contentList'.format(i) for i in range(1,5)]
+ua = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36'
+columns =['标题','链接','位置','面积','朝向','户型','层高','看房时间','出租价格']
+for url in url_list:
+    req = requests.get(url,headers = {
+        'User-Agent':ua
+    })
+    soup = BeautifulSoup(req.text,'html.parser')
+    soup.prettify()# 使用prettify()格式化显示输出
+    s = soup.find_all(attrs={'class':'content__list--item--main'})
+    row = []
+    for i in s:
+        href = i.a['href']
+        des = i.text
+        arr = re.split('\n',des)
+        arrs =[i.strip() for i in arr if(len(i.strip())!=0)]
+        title =arrs[0]
+        address =arrs[1]
+        area = arrs[3]
+        direction =arrs[4].strip('/')
+        style =arrs[5]
+        high = arrs[7]
+        time = arrs[-2]
+        price = arrs[-1]
+        details =[title,href,address,area,direction,style,high,time,price]
+        row.append(details)
+#print(row)
+# cs = pandas.DataFrame(columns=columns,data=row)
+# cs.to_csv('C:\\Users\\Administrator\\Desktop\\test\\shlj.csv',encoding='utf-8')
+with open('C:\\Users\\Administrator\\Desktop\\test\\lianjia.csv','w') as f:
+    f_csv = csv.writer(f)
+    f_csv.writerows(row)
