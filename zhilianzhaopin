@@ -1,0 +1,62 @@
+import csv, time, json, requests
+
+from bs4 import BeautifulSoup
+
+headers1 = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36',
+    'cookie': 'acw_tc=2760820e15777949322221251e430a3dd7faa1cf4a5715f83c70f765fa68d5; x-zp-client-id=cd46e500-f054-4a9e-ae08-549511a1a4f4; sts_deviceid=16f64bd18c546a-0c10c1ceb27064-6701b35-1247616-16f64bd18c6788; sts_sg=1; sts_chnlsid=Unknown; zp_src_url=https%3A%2F%2Fjobs.zhaopin.com%2FCC383859710J00250641904.htm; jobRiskWarning=true; urlfrom=121114584; urlfrom2=121114584; adfcid=www.google.com; adfcid2=www.google.com; adfbid=0; adfbid2=0; dywea=95841923.1909495126225336600.1578059028.1578059028.1578059028.1; dywec=95841923; dywez=95841923.1578059028.1.1.dywecsr=google.com|dyweccn=(referral)|dywecmd=referral|dywectr=undefined|dywecct=/; dyweb=95841923.1.10.1578059028; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2216f64bd18cd1ec-02a0901549905f-6701b35-1247616-16f64bd18ce709%22%2C%22%24device_id%22%3A%2216f64bd18cd1ec-02a0901549905f-6701b35-1247616-16f64bd18ce709%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.google.com%2F%22%7D%7D; Hm_lvt_38ba284938d5eddca645bb5e02a02006=1578059028; sts_sid=16f6ba5d5091a8-0a27d386872ccf-6701b35-1247616-16f6ba5d50a5aa; __utma=269921210.1392012614.1578059028.1578059028.1578059028.1; __utmc=269921210; __utmz=269921210.1578059028.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); __utmt=1; __utmb=269921210.1.10.1578059028; ZP_OLD_FLAG=false; POSSPORTLOGIN=3; CANCELALL=0; LastCity=%E6%B7%B1%E5%9C%B3; LastCity%5Fid=765; ZL_REPORT_GLOBAL={%22jobs%22:{%22recommandActionidShare%22:%2274f5cbda-8e04-4807-a819-2459253af9c4-job%22}%2C%22sou%22:{%22actionid%22:%22f7951cd9-68d5-4a70-bad1-a73cca0001c5-sou%22%2C%22funczone%22:%22smart_matching%22}}; sts_evtseq=5; Hm_lpvt_38ba284938d5eddca645bb5e02a02006=1578059140'
+}
+
+headers2 = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36',
+    'cookie': 'acw_tc=2760821015779431101087683e8f3df45132f35f5745247514f8b2b9a40212; x-zp-client-id=cd46e500-f054-4a9e-ae08-549511a1a4f4; sts_deviceid=16f64bd18c546a-0c10c1ceb27064-6701b35-1247616-16f64bd18c6788; sts_sg=1; sts_chnlsid=Unknown; zp_src_url=https%3A%2F%2Fjobs.zhaopin.com%2FCC383859710J00250641904.htm; jobRiskWarning=true; urlfrom=121114584; urlfrom2=121114584; adfcid=www.google.com; adfcid2=www.google.com; adfbid=0; adfbid2=0; dywea=95841923.1909495126225336600.1578059028.1578059028.1578059028.1; dywec=95841923; dywez=95841923.1578059028.1.1.dywecsr=google.com|dyweccn=(referral)|dywecmd=referral|dywectr=undefined|dywecct=/; dyweb=95841923.1.10.1578059028; sensorsdata2015jssdkcross=%7B%22distinct_id%22%3A%2216f64bd18cd1ec-02a0901549905f-6701b35-1247616-16f64bd18ce709%22%2C%22%24device_id%22%3A%2216f64bd18cd1ec-02a0901549905f-6701b35-1247616-16f64bd18ce709%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E8%87%AA%E7%84%B6%E6%90%9C%E7%B4%A2%E6%B5%81%E9%87%8F%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC%22%2C%22%24latest_referrer%22%3A%22https%3A%2F%2Fwww.google.com%2F%22%7D%7D; Hm_lvt_38ba284938d5eddca645bb5e02a02006=1578059028; sts_sid=16f6ba5d5091a8-0a27d386872ccf-6701b35-1247616-16f6ba5d50a5aa; __utma=269921210.1392012614.1578059028.1578059028.1578059028.1; __utmc=269921210; __utmz=269921210.1578059028.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); __utmt=1; __utmb=269921210.1.10.1578059028; ZP_OLD_FLAG=false; POSSPORTLOGIN=3; CANCELALL=0; LastCity=%E6%B7%B1%E5%9C%B3; LastCity%5Fid=765; Hm_lpvt_38ba284938d5eddca645bb5e02a02006=1578059140; acw_sc__v2=5e0f4744506e074726bf679d935570f0c9b8a2e3; ZL_REPORT_GLOBAL={%22jobs%22:{%22recommandActionidShare%22:%2245b7d57c-6c3c-46cc-af67-9132d67e0697-job%22}%2C%22sou%22:{%22actionid%22:%22f7951cd9-68d5-4a70-bad1-a73cca0001c5-sou%22%2C%22funczone%22:%22smart_matching%22}}; sts_evtseq=8',
+    'Referer': 'https://sou.zhaopin.com/?p=1&jl=765&kw=python&kt=3'
+}
+
+payload = {
+    'pageSize': "90",
+    'cityId': "635",
+    'workExperience': "-1",
+    'education': "-1",
+    'companyType': "-1",
+    'employmentType': "-1",
+    'jobWelfareTag': "-1",
+    'kw': "python",
+    'kt': "3",
+    '_v': "0.13534764",
+}
+
+for i in range(2):
+    time.sleep(1)
+    url = 'https://fe-api.zhaopin.com/c/i/sou'
+    if i > 0:
+        payload['start'] = i * 90  
+        req = requests.post(url, headers=headers1, data=json.dumps(payload))
+        data1 = req.json()
+        items = data1['data']['results'] 
+
+        for item in items:  # 遍历招聘列表
+
+            title = item['jobName']  # 招聘关键词
+            salary = item['salary']  # 薪水
+            edu = item['eduLevel']['name']  # 学历要求
+            exp = item['workingExp']['name']  # 工作经验要求
+            link = item['positionURL']  # 详细页url
+            emplType = item['emplType']  # 是否全职
+            company = item['company']
+            company_name = company['name']  # 公司名
+            company_type = company['type']['name']  # 公司类型
+            company_size = company['size']['name']  # 公司规模
+
+            time.sleep(1)  # 限制抓详细页的频率
+            headers2['Referer'] = 'https://sou.zhaopin.com/?p={}&jl=765&kw=python&kt=3'.format(i + 1)
+            req_detail = requests.get(link, headers=headers2)
+            req_text = req_detail.text
+            soup = BeautifulSoup(req_detail.text, 'lxml')
+            detail = soup.find(class_='describtion__detail-content').text  # 从详细页获得职位要求
+ 
+            line = [title, salary, edu, exp, link, emplType, company_name, company_type, company_size, detail]
+with open('d://test//zhaopin.csv', 'a', encoding='utf-8-sig') as f:
+    f_csv = csv.writer(f)
+    f_csv.writerow(line)
+print('写入完成')
